@@ -81,7 +81,7 @@ abstract class MovimentacaoBase implements Movimentacao {
             "Ano"      , String.valueOf(this.getAno()),
             "Data Hora", this.getDataHora(),
             "Itens"    , String.valueOf(this.itens.size()),
-            "Usuário"  , this.getUsuario().getPessoa().getNome()
+            "Usuário"  , this.getUsuario().getNome()
         );
     }
 

@@ -4,13 +4,13 @@ public class Usuario {
 
     private final long matricula;
     private final String funcao;
-    private final Pessoa pessoa;
+    private final String nome;
 
 
-    public Usuario(long matricula, String funcao, Pessoa pessoa) {
+    public Usuario(final long matricula, String funcao, String nome) {
         this.matricula = matricula;
         this.funcao = funcao;
-        this.pessoa = pessoa;
+        this.nome = nome;
     }
 
 
@@ -22,8 +22,8 @@ public class Usuario {
         return funcao;
     }
 
-    public Pessoa getPessoa() {
-        return pessoa;
+    public String getNome() {
+        return nome;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class Usuario {
           java.util.Map.<String, String>of(
             "matricula", String.valueOf(this.getMatricula()),
             "funcao"   , this.getFuncao(),
-            "Pessoa"   , this.getPessoa().getNome()
+            "nome"     , this.getNome()
           )
         ).toString();
     }
