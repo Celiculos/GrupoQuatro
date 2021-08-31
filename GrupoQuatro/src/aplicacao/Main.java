@@ -21,8 +21,6 @@ public class Main {
     private static final int ACAO_DELETAR = 3;
 
     private static final java.util.Map<String, DataAccessObject> daos = new java.util.HashMap<>();
-    private static final java.util.Map<String, Produto> produtos = new java.util.HashMap<>();
-    private static final java.util.Map<String, Usuario> usuarios = new java.util.HashMap<>();
 
     private static final java.util.Scanner scanner = new java.util.Scanner(System.in);
 
@@ -30,14 +28,6 @@ public class Main {
     public static void main(String[] args) {
         init();
         menu();
-//        criaUsuarios();
-//        criaProdutos();
-//        criaEstoqueInicial();
-//        imprimeEstoqueInicial();
-//        criaEntradas();
-//        imprimeEstoquePosCompras();
-//        criaSaidas();
-//        imprimeEstoqueFinal();
     }
 
 
