@@ -7,21 +7,17 @@ package entidades;
  */
 public class Estoque {
 
-    public static java.util.Map<Produto, Estoque> estoque = new java.util.HashMap<>();
-
     private final Produto produto;
     private double quantidade;
-    private double valorTotal;
 
 
-    public Estoque(final Produto produto, final double quantidade, final double valorTotal) {
+    public Estoque(final Produto produto, final double quantidade) {
         this.produto = produto;
         this.quantidade = quantidade;
-        this.valorTotal = valorTotal;
     }
 
     public Estoque(Produto produto) {
-        this(produto, 0, 0);
+        this(produto, 0);
     }
 
 
@@ -33,30 +29,13 @@ public class Estoque {
         return quantidade;
     }
 
-    public double getValorUnitario() {
-        return this.getValorTotal() / this.getQuantidade();
-    }
-
-    public double getValorTotal() {
-        return this.valorTotal;
-    }
-
-    public void entrada(double quantidade, double valorTotal) {
+    public void entrada(double quantidade) {
         this.quantidade += quantidade;
-        this.valorTotal += valorTotal;
     }
 
-    public void saida(double quantidade, double valorTotal) {
+    public void saida(double quantidade) {
         //TODO validar quantidade negativa
         this.quantidade -= quantidade;
-        this.valorTotal -= valorTotal;
-    }
-
-    public static Estoque busca(Produto produto) {
-        if(!estoque.containsKey(produto)) {
-            estoque.put(produto, new Estoque(produto));
-        }
-        return estoque.get(produto);
     }
 
     @Override
@@ -65,9 +44,7 @@ public class Estoque {
           java.util.Map.<String, String>of(
             "Produto"       , this.getProduto().getDescricao(),
             "Marca"         , this.getProduto().getMarca().getNome(),
-            "quantidade"    , String.format("%.2f", this.getQuantidade()),
-            "Valor Unitário", String.format("%.2f", this.getValorUnitario()),
-            "Valor Total"   , String.format("%.2f", this.getValorTotal())
+            "quantidade"    , String.format("%.2f", this.getQuantidade())
           )
         ).toString();
     }

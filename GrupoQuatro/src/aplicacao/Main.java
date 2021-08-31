@@ -9,6 +9,9 @@ public class Main {
     private static final int MENU_MOVIMENTACOES = 2;
     private static final int MENU_CADASTROS     = 3;
 
+    private static final int MOVIMENTACAO_COMPRA = 1;
+    private static final int MOVIMENTACAO_VENDA  = 2;
+
     private static final int CADASTRO_MARCA   = 1;
     private static final int CADASTRO_PRODUTO = 2;
     private static final int CADASTRO_USUARIO = 3;
@@ -17,9 +20,9 @@ public class Main {
     private static final int ACAO_ALTERAR = 2;
     private static final int ACAO_DELETAR = 3;
 
-    private static java.util.Map<String, DataAccessObject> daos = new java.util.HashMap<>();
-    private static java.util.Map<String, Produto> produtos = new java.util.HashMap<>();
-    private static java.util.Map<String, Usuario> usuarios = new java.util.HashMap<>();
+    private static final java.util.Map<String, DataAccessObject> daos = new java.util.HashMap<>();
+    private static final java.util.Map<String, Produto> produtos = new java.util.HashMap<>();
+    private static final java.util.Map<String, Usuario> usuarios = new java.util.HashMap<>();
 
     private static final java.util.Scanner scanner = new java.util.Scanner(System.in);
 
@@ -46,6 +49,9 @@ public class Main {
         initDaoMarca();
         initDaoProduto();
         initDaoUsuario();
+        initDaoCompra();
+        initDaoVenda();
+        initDaoEstoque();
     }
 
     private static void initDaoMarca() {
@@ -71,6 +77,38 @@ public class Main {
         daos.put("usuario", new UsuarioDao(new Usuario(0, "", "")));
     }
 
+    private static void initDaoCompra() {
+        Compra compra1 = new Compra(1, "Mercado da Esquina");
+        compra1.adicionaItem((Produto) daos.get("produto").get(1), 2);
+        compra1.adicionaItem((Produto) daos.get("produto").get(5), 2);
+
+        Compra compra2 = new Compra(2, "Venda no fim da rua");
+        compra2.adicionaItem((Produto) daos.get("produto").get(3), 2);
+        compra2.adicionaItem((Produto) daos.get("produto").get(4), 1);
+
+        compra1.movimentaEstoque((Usuario) daos.get("usuario").get(3));
+        compra2.movimentaEstoque((Usuario) daos.get("usuario").get(4));
+
+        daos.put("compra", new CompraDao(new Compra(0, "")));
+    }
+
+    private static void initDaoVenda() {
+        Venda venda1 = new Venda(1);
+        venda1.adicionaItem((Produto) daos.get("produto").get(3), 1);
+
+        Venda venda2 = new Venda(2);
+        venda2.adicionaItem((Produto) daos.get("produto").get(4), 1);
+
+        venda1.movimentaEstoque((Usuario) daos.get("usuario").get(1));
+        venda2.movimentaEstoque((Usuario) daos.get("usuario").get(2));
+
+        daos.put("venda", new VendaDao(new Venda(0)));
+    }
+
+    private static void initDaoEstoque() {
+        daos.put("estoque", new EstoqueDao(new Estoque(new Produto(0, "", new Marca(0, "")))));
+    }
+
     private static void menu() {
         int opcao;
         do {
@@ -94,9 +132,11 @@ public class Main {
 
     private static void trataOpcaoMenu(int opcao) {
         switch(opcao) {
-            case MENU_CADASTROS -> menuCadastros();
+            case MENU_ESTOQUE -> menuEstoque();
 
-            case MENU_MOVIMENTACOES -> menuCadastros();
+            case MENU_MOVIMENTACOES -> menuMovimentacoes();
+
+            case MENU_CADASTROS -> menuCadastros();
         }
     }
 
@@ -172,7 +212,7 @@ public class Main {
         switch(cadastro) {
             case CADASTRO_MARCA -> trataAcaoCadastroMarca(acao);
 
-            case CADASTRO_PRODUTO -> trataAcaoCadastroProduto(acao);
+            case CADASTRO_PRODUTO -> trataAcaoMovimentacaoProduto(acao);
 
             case CADASTRO_USUARIO -> trataAcaoCadastroUsuario(acao);
         }
@@ -203,8 +243,8 @@ public class Main {
                 )
             ).insere();
             System.out.println("Marca inserida com sucesso!");
-        } catch(Exception e) {
-            System.out.println("Erro ao incluir a marca: " + e.toString());
+        } catch(Exception exception) {
+            System.out.println("Erro ao incluir a marca: " + exception.getMessage());
         } finally {
             consultaMarca();
         }
@@ -220,8 +260,8 @@ public class Main {
             System.out.println("Marca alterada com sucesso!");
         } catch(NullPointerException nullPointer) {
             System.out.println("Erro ao atualizar a marca: não foi encontrada nenhuma marca com o código informado!");
-        } catch(Exception e) {
-            System.out.println("Erro ao alterar a marca: " + e.toString());
+        } catch(Exception exception) {
+            System.out.println("Erro ao alterar a marca: " + exception.getMessage());
         } finally {
             consultaMarca();
         }
@@ -236,14 +276,14 @@ public class Main {
             System.out.println("Marca deletada com sucesso!");
         } catch(NullPointerException nullPointer) {
             System.out.println("Erro ao deletar a marca: não foi encontrada nenhuma marca com o código informado!");
-        } catch(Exception e) {
-            System.out.println("Erro ao deletar a marca: " + e.toString());
+        } catch(Exception exception) {
+            System.out.println("Erro ao deletar a marca: " + exception.getMessage());
         } finally {
             consultaMarca();
         }
     }
 
-    private static void trataAcaoCadastroProduto(int acao) {
+    private static void trataAcaoMovimentacaoProduto(int acao) {
         switch(acao) {
             case ACAO_INSERIR -> insereProduto();
 
@@ -275,8 +315,8 @@ public class Main {
                 )
             ).insere();
             System.out.println("Produto inserido com sucesso!");
-        } catch(Exception e) {
-            System.out.println("Erro ao incluir o produto: " + e.toString());
+        } catch(Exception exception) {
+            System.out.println("Erro ao incluir o produto: " + exception.getMessage());
         } finally {
             consultaProduto();
         }
@@ -292,8 +332,8 @@ public class Main {
             System.out.println("Produto alterado com sucesso!");
         } catch(NullPointerException nullPointer) {
             System.out.println("Erro ao alterar o produto: não foi encontrada nenhum produto com o código informado!");
-        } catch(Exception e) {
-            System.out.println("Erro ao alterar o produto: " + e.toString());
+        } catch(Exception exception) {
+            System.out.println("Erro ao alterar o produto: " + exception.getMessage());
         } finally {
             consultaProduto();
         }
@@ -308,8 +348,8 @@ public class Main {
             System.out.println("Produto deletado com sucesso!");
         } catch(NullPointerException nullPointer) {
             System.out.println("Erro ao deletar o produto: não foi encontrada nenhum produto com o código informado!");
-        } catch(Exception e) {
-            System.out.println("Erro ao deletar o produto: " + e.toString());
+        } catch(Exception exception) {
+            System.out.println("Erro ao deletar o produto: " + exception.getMessage());
         } finally {
             consultaProduto();
         }
@@ -348,8 +388,8 @@ public class Main {
                 )
             ).insere();
             System.out.println("Usuario inserido com sucesso!");
-        } catch(Exception e) {
-            System.out.println("Erro ao incluir o usuario: " + e.toString());
+        } catch(Exception exception) {
+            System.out.println("Erro ao incluir o usuario: " + exception.getMessage());
         } finally {
             consultaUsuario();
         }
@@ -365,8 +405,8 @@ public class Main {
             System.out.println("Usuario alterado com sucesso!");
         } catch(NullPointerException nullPointer) {
             System.out.println("Erro ao alterar o usuario: não foi encontrada nenhum usuario com a matrícula informada!");
-        } catch(Exception e) {
-            System.out.println("Erro ao alterar o usuario: " + e.toString());
+        } catch(Exception exception) {
+            System.out.println("Erro ao alterar o usuario: " + exception.getMessage());
         } finally {
             consultaUsuario();
         }
@@ -381,99 +421,181 @@ public class Main {
             System.out.println("Usuario deletado com sucesso!");
         } catch(NullPointerException nullPointer) {
             System.out.println("Erro ao deletar o usuario: não foi encontrada nenhum usuario com o código informado!");
-        } catch(Exception e) {
-            System.out.println("Erro ao deletar o usuario: " + e.toString());
+        } catch(Exception exception) {
+            System.out.println("Erro ao deletar o usuario: " + exception.getMessage());
         } finally {
             consultaUsuario();
         }
     }
 
-    private static void criaUsuarios() {
-//        usuarios.put("celio"  , new Usuario(1, "programador"  , new Pessoa("Célio"  , "1")));
-//        usuarios.put("thiago" , new Usuario(2, "programador"  , new Pessoa("Thiago" , "2")));
-//        usuarios.put("rafael" , new Usuario(3, "desenvolvedor", new Pessoa("Rafael" , "3")));
-//        usuarios.put("marcelo", new Usuario(4, "desenvolvedor", new Pessoa("Marcelo", "4")));
+    private static void menuMovimentacoes() {
+        int opcao;
+        do {
+            imprimeOpcoesMovimentacoes();
+            opcao = scanner.nextInt();
+            trataOpcaoMenuMovimentacoes(opcao);
+        } while(opcao != 0);
     }
 
-    private static void criaProdutos() {
-        Marca elmaChips = new Marca(1, "ElmaChips");
-        Marca coca      = new Marca(2, "Coca-Cola");
-        produtos.put("doritos", new Produto(1, "Doritos", elmaChips));
-        produtos.put("ruffles", new Produto(2, "Ruffles", elmaChips));
-        produtos.put("cheetos", new Produto(3, "Cheetos", elmaChips));
-        produtos.put("coca"   , new Produto(4, "Coca-Cola", coca));
-        produtos.put("fanta"  , new Produto(5, "Fanta"    , coca));
+    private static void imprimeOpcoesMovimentacoes() {
+        System.out.println("+-------------------------+");
+        System.out.println("| ### PROJETO ESTOQUE ### |");
+        System.out.println("|                         |");
+        System.out.println("| 2 - Movimentações       |");
+        System.out.println("|     1 - Compras         |");
+        System.out.println("|     2 - Vendas          |");
+        System.out.println("|                         |");
+        System.out.println("| 0 - Voltar              |");
+        System.out.println("+-------------------------+");
     }
 
-    private static void criaEstoqueInicial() {
-        Compra compra1_2020 = new Compra(1, 2020, new Pessoa("Pepsico", "XX.XXX.XXX/0001-XX"));
-        compra1_2020.adicionaItem(produtos.get("doritos"), 10, 100);
-        compra1_2020.adicionaItem(produtos.get("ruffles"),  5,  75);
-        compra1_2020.adicionaItem(produtos.get("cheetos"), 10,  10);
-
-        Compra compra2_2020 = new Compra(2, 2020, new Pessoa("João do Caminhão", "000.123.456-78"));
-        compra2_2020.adicionaItem(produtos.get("coca"), 10, 50);
-
-        compra1_2020.movimentaEstoque(usuarios.get("celio"));
-        compra2_2020.movimentaEstoque(usuarios.get("thiago"));
+    private static void imprimeAcoesMovimentacoes() {
+        System.out.println("\r\nInforme a ação desejada:");
+        System.out.println("+-------------------------+");
+        System.out.println("| 1 - Inserir             |");
+        System.out.println("|                         |");
+        System.out.println("| 0 - Voltar              |");
+        System.out.println("+-------------------------+");
     }
 
-    private static void imprimeEstoqueInicial() {
-        System.out.println("*** Estoque Inicial ***");
-        imprimeEstoque();
+    private static void trataOpcaoMenuMovimentacoes(int movimentacao) {
+        switch(movimentacao) {
+            case MOVIMENTACAO_COMPRA -> {
+                System.out.println("Compras realizadas:");
+                consultaCompra();
+                int opcao;
+                do {
+                    imprimeAcoesMovimentacoes();
+                    opcao = scanner.nextInt();
+                    trataAcaoMenuMovimentacoes(movimentacao, opcao);
+                } while(opcao != 0);
+            }
+            case MOVIMENTACAO_VENDA -> {
+                System.out.println("Vendas realizadas:");
+                consultaVenda();
+                int opcao;
+                do {
+                    imprimeAcoesMovimentacoes();
+                    opcao = scanner.nextInt();
+                    trataAcaoMenuMovimentacoes(movimentacao, opcao);
+                } while(opcao != 0);
+            }
+        }
     }
 
-    private static void imprimeEstoque() {
-        Estoque.estoque.entrySet().forEach(pair -> {
-            System.out.println(pair.getValue());
+    private static void trataAcaoMenuMovimentacoes(int movimentacao, int acao) {
+        switch(movimentacao) {
+            case MOVIMENTACAO_COMPRA -> trataAcaoMovimentacaoCompra(acao);
+
+            case MOVIMENTACAO_VENDA -> trataAcaoMovimentacaoVenda(acao);
+        }
+    }
+
+    private static void trataAcaoMovimentacaoCompra(int acao) {
+        switch(acao) {
+            case ACAO_INSERIR -> insereCompra();
+        }
+    }
+
+    private static void consultaCompra() {
+        daos.get("compra").getTodos().forEach(compra -> {
+            System.out.println(compra);
         });
     }
 
-    private static void criaEntradas() {
-        Compra compra1_2021 = new Compra(1, 2021, new Pessoa("Mercadão", "CNPJ"));
-        compra1_2021.adicionaItem(produtos.get("ruffles"), 2, 20);
-        compra1_2021.adicionaItem(produtos.get("fanta")  , 1,  5);
+    private static void insereCompra() {
+        System.out.println("Informe o fornecedor:");
+        Compra compra = new Compra(daos.get("compra").proximoCodigo(), scanner.next());
 
-        Compra compra2_2021 = new Compra(2, 2021, new Pessoa("Pubzinho", "CNPJ 2"));
-        compra2_2021.adicionaItem(produtos.get("coca")   , 1, 6);
-        compra2_2021.adicionaItem(produtos.get("doritos"), 1, 8);
+        final Produto produto;
+        try {
+            System.out.println("Informe o código do produto a ser dada a entrada:");
+            produto = (Produto) daos.get("produto").get(scanner.nextLong());
+        } catch(NullPointerException nullPointer) {
+            System.out.println("Não foi possível recuperar o produto!");
+            return;
+        } catch(Exception exception) {
+            System.out.println("Erro ao recuperar o produto:" + exception.getMessage());
+            return;
+        }
 
-        compra1_2021.movimentaEstoque(usuarios.get("rafael"));
-        compra2_2021.movimentaEstoque(usuarios.get("marcelo"));
+        System.out.println("Informe a quantidade do produto:");
+        compra.adicionaItem(produto, scanner.nextDouble());
 
-        System.out.println("");
-        System.out.println("*** Compras ***");
-        System.out.println(compra1_2021);
-        System.out.println(compra2_2021);
+        final Usuario usuario;
+        try {
+            System.out.println("Informe o código do usuário realizando a movimentação:");
+            usuario = (Usuario) daos.get("usuario").get(scanner.nextLong());
+        } catch(NullPointerException nullPointer) {
+            System.out.println("Não foi possível recuperar o usuário!");
+            return;
+        }
+
+        try {
+            compra.movimentaEstoque(usuario);
+        } catch(Exception exception) {
+            System.out.println("Erro ao inserir a compra: " + exception.getMessage());
+        } finally {
+            consultaCompra();
+        }
     }
 
-    private static void imprimeEstoquePosCompras() {
-        System.out.println("*** Estoque Após Compras ***");
-        imprimeEstoque();
+    private static void trataAcaoMovimentacaoVenda(int acao) {
+        switch(acao) {
+            case ACAO_INSERIR -> insereVenda();
+        }
     }
 
-    private static void criaSaidas() {
-        Venda venda1_2021 = new Venda(1, 2021);
-        venda1_2021.adicionaItem(produtos.get("ruffles"), 3, 20);
-        venda1_2021.adicionaItem(produtos.get("doritos"), 1,  8);
-
-        Venda venda2_2021 = new Venda(2, 2021);
-        venda2_2021.adicionaItem(produtos.get("cheetos"), 1, 10);
-        venda2_2021.adicionaItem(produtos.get("doritos"), 1,  8);
-
-        venda1_2021.movimentaEstoque(usuarios.get("celio"));
-        venda2_2021.movimentaEstoque(usuarios.get("marcelo"));
-
-        System.out.println("");
-        System.out.println("*** Vendas ***");
-        System.out.println(venda1_2021);
-        System.out.println(venda2_2021);
+    private static void consultaVenda() {
+        daos.get("venda").getTodos().forEach(compra -> {
+            System.out.println(compra);
+        });
     }
 
+    private static void insereVenda() {
+        Venda venda = new Venda(daos.get("venda").proximoCodigo());
 
-    private static void imprimeEstoqueFinal() {
-        System.out.println("*** Estoque Final ***");
-        imprimeEstoque();
+        final Produto produto;
+        try {
+            System.out.println("Informe o código do produto a ser dada a saída:");
+            produto = (Produto) daos.get("produto").get(scanner.nextLong());
+        } catch(NullPointerException nullPointer) {
+            System.out.println("Não foi possível recuperar o produto!");
+            return;
+        } catch(Exception exception) {
+            System.out.println("Erro ao recuperar o produto:" + exception.getMessage());
+            return;
+        }
+
+        System.out.println("Informe a quantidade do produto:");
+        venda.adicionaItem(produto, scanner.nextDouble());
+
+        final Usuario usuario;
+        try {
+            System.out.println("Informe o código do usuário realizando a movimentação:");
+            usuario = (Usuario) daos.get("usuario").get(scanner.nextLong());
+        } catch(NullPointerException nullPointer) {
+            System.out.println("Não foi possível recuperar o usuário!");
+            return;
+        }
+
+        try {
+            venda.movimentaEstoque(usuario);
+        } catch(Exception exception) {
+            System.out.println("Erro ao inserir a venda: " + exception.getMessage());
+        } finally {
+            consultaVenda();
+        }
+    }
+
+    private static void menuEstoque() {
+        consultaEstoque();
+    }
+
+    private static void consultaEstoque() {
+        daos.get("estoque").getTodos().forEach(estoque -> {
+            System.out.println(estoque);
+        });
     }
 
 }

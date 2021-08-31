@@ -6,14 +6,15 @@ package entidades;
  */
 public class ItemVenda extends ItemMovimentacaoBase {
 
-    public ItemVenda(Produto produto, double quantidade, double valor) {
-        super(produto, quantidade, valor);
+    public ItemVenda(final long codigo, final Venda venda, final Produto produto, final double quantidade) {
+        super(codigo, venda, produto, quantidade);
     }
 
 
     @Override
-    protected void contabiliza(Estoque estoque) {
-        estoque.saida(this.getQuantidade(), this.getValor());
+    protected void contabiliza(final Estoque estoque) {
+        estoque.saida(this.getQuantidade());
+        (new dao.EstoqueDao(estoque)).atualiza();
     }
 
 }

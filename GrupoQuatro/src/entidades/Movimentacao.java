@@ -15,13 +15,6 @@ public interface Movimentacao {
     public long getNumero();
 
     /**
-     * Ano da movimentação.
-     *
-     * @return ano
-     */
-    public int getAno();
-
-    /**
      * Texto com a data e hora.
      *
      * @return data e hora
@@ -40,11 +33,10 @@ public interface Movimentacao {
      *
      * @param produto
      * @param quantidade
-     * @param valor
      *
      * @return item que movimenta o estoque
      */
-    public ItemMovimentacao adicionaItem(Produto produto, double quantidade, double valor);
+    public ItemMovimentacao adicionaItem(Produto produto, double quantidade);
 
     /**
      * Movimenta o estoque.

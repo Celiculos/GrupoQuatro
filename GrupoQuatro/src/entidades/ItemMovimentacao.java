@@ -7,6 +7,20 @@ package entidades;
 public interface ItemMovimentacao {
 
     /**
+     * Código sequencial do item.
+     *
+     * @return long
+     */
+    public long getCodigo();
+
+    /**
+     * Movimentação.
+     *
+     * @return Movimentacao
+     */
+    public Movimentacao getMovimentacao();
+
+    /**
      * Produto estocado.
      *
      * @return Produto
@@ -19,13 +33,6 @@ public interface ItemMovimentacao {
      * @return quantidade
      */
     public double getQuantidade();
-
-    /**
-     * Valor alterado do estoque.
-     *
-     * @return valor total
-     */
-    public double getValor();
 
     /**
      * Movimenta o estoque

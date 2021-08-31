@@ -9,29 +9,43 @@ import java.util.Map;
  */
 public class Compra extends MovimentacaoBase {
 
-    private final Pessoa fornecedor;
+    private final String fornecedor;
 
 
-    public Compra(final long numero, final int ano, final Pessoa fornecedor) {
-        super(numero, ano);
+    public Compra(final long numero, final String fornecedor) {
+        super(numero);
         this.fornecedor = fornecedor;
     }
 
 
-    public Pessoa getFornecedor() {
+    public String getFornecedor() {
         return this.fornecedor;
     }
 
     @Override
-    protected ItemMovimentacao criaItem(Produto produto, double quantidade, double valor) {
-        return new ItemCompra(produto, quantidade, valor);
+    protected ItemMovimentacao criaItem(Produto produto, double quantidade) {
+        return new ItemCompra(
+            (
+                new dao.ItemCompraDao(
+                    new ItemCompra(0, this, null, 0)
+                ).proximoCodigo()
+            ),
+            this,
+            produto,
+            quantidade
+        );
     }
 
     @Override
     protected Map mapForBox() {
         Map map = new java.util.HashMap<String, String>(super.mapForBox());
-        map.put("Fornecedor", fornecedor.getNome());
+        map.put("Fornecedor", this.getFornecedor());
         return map;
+    }
+
+    @Override
+    protected void salva() {
+        (new dao.CompraDao(this)).insere();
     }
 
 }
