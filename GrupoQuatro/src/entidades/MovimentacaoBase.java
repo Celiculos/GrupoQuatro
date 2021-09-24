@@ -20,6 +20,13 @@ abstract class MovimentacaoBase implements Movimentacao {
         this.itens  = new java.util.ArrayList<ItemMovimentacao>();
     }
 
+    public MovimentacaoBase(long numero, String dataHora, Usuario usuario) {
+        this.numero = numero;
+        this.dataHora = dataHora;
+        this.usuario = usuario;
+        this.itens  = new java.util.ArrayList<ItemMovimentacao>();
+    }
+
 
     public long getNumero() {
         return numero;
@@ -76,7 +83,6 @@ abstract class MovimentacaoBase implements Movimentacao {
         return java.util.Map.<String, String>of(
             "Nº"       , String.valueOf(this.getNumero()),
             "Data Hora", this.getDataHora(),
-            "Itens"    , String.valueOf(this.itens.size()),
             "Usuário"  , this.getUsuario().getNome()
         );
     }

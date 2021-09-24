@@ -45,25 +45,25 @@ public class Main {
     }
 
     private static void initDaoMarca() {
-        (new MarcaDao(new Marca(1, "ElmaChips"))).insere();
-        (new MarcaDao(new Marca(2, "Coca-Cola"))).insere();
+//        (new MarcaDao(new Marca(1, "ElmaChips"))).insere();
+//        (new MarcaDao(new Marca(2, "Coca-Cola"))).insere();
         daos.put("marca", new MarcaDao(new Marca(0, "")));
     }
 
     private static void initDaoProduto() {
-        (new ProdutoDao(new Produto(1, "Doritos"  , (Marca) daos.get("marca").get(1)))).insere();
-        (new ProdutoDao(new Produto(2, "Ruffles"  , (Marca) daos.get("marca").get(1)))).insere();
-        (new ProdutoDao(new Produto(3, "Cheetos"  , (Marca) daos.get("marca").get(1)))).insere();
-        (new ProdutoDao(new Produto(4, "Coca-Cola", (Marca) daos.get("marca").get(2)))).insere();
-        (new ProdutoDao(new Produto(5, "Fanta"    , (Marca) daos.get("marca").get(2)))).insere();
+//        (new ProdutoDao(new Produto(1, "Doritos"  , (Marca) daos.get("marca").get(1)))).insere();
+//        (new ProdutoDao(new Produto(2, "Ruffles"  , (Marca) daos.get("marca").get(1)))).insere();
+//        (new ProdutoDao(new Produto(3, "Cheetos"  , (Marca) daos.get("marca").get(1)))).insere();
+//        (new ProdutoDao(new Produto(4, "Coca-Cola", (Marca) daos.get("marca").get(2)))).insere();
+//        (new ProdutoDao(new Produto(5, "Fanta"    , (Marca) daos.get("marca").get(2)))).insere();
         daos.put("produto", new ProdutoDao(new Produto(0, "", new Marca(0, ""))));
     }
 
     private static void initDaoUsuario() {
-        (new UsuarioDao(new Usuario(1, "programador"  , "Célio"  ))).insere();
-        (new UsuarioDao(new Usuario(2, "programador"  , "Thiago" ))).insere();
-        (new UsuarioDao(new Usuario(3, "desenvolvedor", "Rafael" ))).insere();
-        (new UsuarioDao(new Usuario(4, "desenvolvedor", "Marcelo"))).insere();
+//        (new UsuarioDao(new Usuario(1, "programador"  , "Célio"  ))).insere();
+//        (new UsuarioDao(new Usuario(2, "programador"  , "Thiago" ))).insere();
+//        (new UsuarioDao(new Usuario(3, "desenvolvedor", "Rafael" ))).insere();
+//        (new UsuarioDao(new Usuario(4, "desenvolvedor", "Marcelo"))).insere();
         daos.put("usuario", new UsuarioDao(new Usuario(0, "", "")));
     }
 
@@ -76,8 +76,8 @@ public class Main {
         compra2.adicionaItem((Produto) daos.get("produto").get(3), 2);
         compra2.adicionaItem((Produto) daos.get("produto").get(4), 1);
 
-        compra1.movimentaEstoque((Usuario) daos.get("usuario").get(3));
-        compra2.movimentaEstoque((Usuario) daos.get("usuario").get(4));
+//        compra1.movimentaEstoque((Usuario) daos.get("usuario").get(3));
+//        compra2.movimentaEstoque((Usuario) daos.get("usuario").get(4));
 
         daos.put("compra", new CompraDao(new Compra(0, "")));
     }
@@ -89,8 +89,8 @@ public class Main {
         Venda venda2 = new Venda(2);
         venda2.adicionaItem((Produto) daos.get("produto").get(4), 1);
 
-        venda1.movimentaEstoque((Usuario) daos.get("usuario").get(1));
-        venda2.movimentaEstoque((Usuario) daos.get("usuario").get(2));
+//        venda1.movimentaEstoque((Usuario) daos.get("usuario").get(1));
+//        venda2.movimentaEstoque((Usuario) daos.get("usuario").get(2));
 
         daos.put("venda", new VendaDao(new Venda(0)));
     }

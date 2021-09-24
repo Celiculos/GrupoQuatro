@@ -10,6 +10,10 @@ public class Venda extends MovimentacaoBase {
         super(numero);
     }
 
+    public Venda(long numero, String dataHora, Usuario usuario) {
+        super(numero, dataHora, usuario);
+    }
+
 
     @Override
     protected ItemMovimentacao criaItem(Produto produto, double quantidade) {

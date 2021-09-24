@@ -1,6 +1,8 @@
 package dao;
 
 import entidades.Marca;
+import java.sql.*;
+import util.Conexao;
 
 /**
  * DAO da Marca de Produto.
@@ -8,8 +10,6 @@ import entidades.Marca;
  * @author Celiculos
  */
 public final class MarcaDao implements DataAccessObject {
-
-    private static final java.util.Map<Long, Marca> marcas = new java.util.HashMap<>();
 
     private final Marca marca;
 
@@ -20,32 +20,116 @@ public final class MarcaDao implements DataAccessObject {
 
     @Override
     public void insere() {
-        marcas.put(this.marca.getCodigo(), this.marca);
+        Conexao cnx = new Conexao();
+        PreparedStatement comando;
+        try {
+            cnx.conecta();
+            comando = cnx.getConexao().prepareStatement(
+                "INSERT INTO marca (idMarca, nome) VALUES (?, ?)"
+            );
+            comando.setLong  (1, this.marca.getCodigo());
+            comando.setString(2, this.marca.getNome());
+            comando.executeUpdate();
+        } catch (SQLException exception) {
+            throw new RuntimeException("Erro ao inserir a marca: " + exception.getMessage());
+        } finally {
+            cnx.fechar();
+        }
     }
 
     @Override
     public void atualiza() {
-        marcas.put(this.marca.getCodigo(), this.marca);
+        Conexao cnx = new Conexao();
+        PreparedStatement comando;
+        try {
+            cnx.conecta();
+            comando = cnx.getConexao().prepareStatement(
+                "UPDATE marca SET nome = ? WHERE idMarca = ?"
+            );
+            comando.setString(1, this.marca.getNome());
+            comando.setLong  (2, this.marca.getCodigo());
+            comando.executeUpdate();
+        } catch (SQLException exception) {
+            throw new RuntimeException("Erro ao atualizar a marca: " + exception.getMessage());
+        } finally {
+            cnx.fechar();
+        }
     }
 
     @Override
     public void deleta() {
-        marcas.remove(this.marca.getCodigo());
+        Conexao cnx = new Conexao();
+        PreparedStatement comando;
+        try {
+            cnx.conecta();
+            comando = cnx.getConexao().prepareStatement(
+                "DELETE FROM marca WHERE idMarca = ?"
+            );
+            comando.setLong(1, this.marca.getCodigo());
+            comando.executeUpdate();
+        } catch (SQLException exception) {
+            throw new RuntimeException("Erro ao deletar a marca: " + exception.getMessage());
+        } finally {
+            cnx.fechar();
+        }
     }
 
     @Override
     public Marca get(long id) {
-        return marcas.get(id);
+        Conexao cnx = new Conexao();
+        PreparedStatement comando;
+        try {
+            cnx.conecta();
+            comando = cnx.getConexao().prepareStatement("SELECT * FROM marca WHERE idMarca = ?");
+            comando.setLong(1, id);
+            ResultSet resultado = comando.executeQuery();
+            resultado.next();
+            return new Marca(resultado.getLong("idMarca"), resultado.getString("nome"));
+        } catch (SQLException e) {
+            return null;
+        } finally {
+            cnx.fechar();
+        }
     }
 
     @Override
     public java.util.List<Marca> getTodos() {
-        return new java.util.ArrayList<>(marcas.values());
+        Conexao cnx = new Conexao();
+        Statement comando;
+        try {
+            cnx.conecta();
+            comando = cnx.getConexao().createStatement();
+            ResultSet resultado = comando.executeQuery("SELECT * FROM marca");
+            java.util.ArrayList<Marca> marcas = new java.util.ArrayList<>();
+            while(resultado.next()) {
+                marcas.add(new Marca(
+                    resultado.getLong("idMarca"),
+                    resultado.getString("nome")
+                ));
+            }
+            return marcas;
+        } catch (SQLException exception) {
+            throw new RuntimeException("Erro ao buscar as marcas: " + exception.getMessage());
+        } finally {
+            cnx.fechar();
+        }
     }
 
     @Override
     public long proximoCodigo() {
-        return marcas.size() + 1;
+        Conexao cnx = new Conexao();
+        Statement comando;
+        try {
+            cnx.conecta();
+            comando = cnx.getConexao().createStatement();
+            ResultSet resultado = comando.executeQuery("SELECT COALESCE(MAX(idMarca), 0) + 1 AS proximo FROM marca");
+            resultado.next();
+            return resultado.getLong("proximo");
+        } catch (SQLException exception) {
+            throw new RuntimeException("Erro ao buscar o próximo código da marca: " + exception.getMessage());
+        } finally {
+            cnx.fechar();
+        }
     }
 
 }

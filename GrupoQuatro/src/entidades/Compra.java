@@ -1,5 +1,6 @@
 package entidades;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,6 +15,11 @@ public class Compra extends MovimentacaoBase {
 
     public Compra(final long numero, final String fornecedor) {
         super(numero);
+        this.fornecedor = fornecedor;
+    }
+
+    public Compra(long numero, String dataHora, Usuario usuario, String fornecedor) {
+        super(numero, dataHora, usuario);
         this.fornecedor = fornecedor;
     }
 
